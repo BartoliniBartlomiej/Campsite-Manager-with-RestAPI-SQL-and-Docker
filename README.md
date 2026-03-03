@@ -27,7 +27,7 @@ Before you begin, ensure you have the following installed on your machine:
 
 **1. Clone the repository**
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/BartoliniBartlomiej/Campsite-Manager-with-RestAPI-SQL-and-Docker.git
 cd campsite-manager
 
 ```
