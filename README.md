@@ -1,83 +1,71 @@
-# 🏕️ Campsite Manager
 
-A comprehensive management system for campsites, featuring a RESTful API and a modern web dashboard. This application allows campsite owners to effortlessly manage camping spots, customer data, and reservations.
+# 🏕️ Campsite Manager (REST API + UI)
 
-## ✨ Features
+A comprehensive system for managing a campsite and RV park. The application enables seamless management of customers, camping spots, and reservations. The project features a high-performance backend built with FastAPI, an interactive frontend powered by Streamlit, and a PostgreSQL relational database. 
 
-* **Spots Management**: Add, view, and edit camping spots (tents, campers, cabins) with specific pricing.
-* **Customer Database**: Register new customers, update their contact information, and ensure no duplicate emails exist.
-* **Reservation System**: Book spots for customers with automatic date validation to prevent illogical bookings (e.g., end date before start date).
-* **Modern Web UI**: A user-friendly, responsive web interface built with Streamlit.
-* **Interactive API Docs**: Auto-generated Swagger UI for easy API testing and exploration.
+The entire stack is containerized using Docker and is covered by automated testing with a Continuous Integration (CI) pipeline configured via GitHub Actions.
 
-## 🛠️ Tech Stack
+## 🚀 Tech Stack
 
-* **Backend**: FastAPI, Python
-* **Database**: PostgreSQL, SQLAlchemy (ORM)
-* **Frontend**: Streamlit, Pandas, Requests
-* **Infrastructure**: Docker & Docker Compose
+* **Backend:** Python 3.12, FastAPI, Uvicorn, SQLAlchemy, Pydantic
+* **Frontend:** Streamlit, Pandas, Requests
+* **Database:** PostgreSQL (production/Docker environment), SQLite (local testing environment)
+* **Testing:** Pytest, HTTPX
+* **DevOps:** Docker, Docker Compose, GitHub Actions (CI)
 
-## 📋 Prerequisites
+## 🏗️ System Architecture
 
-Before you begin, ensure you have the following installed on your machine:
-* Python 3.8 or higher
-* Docker and Docker Compose (for running the database)
 
-## 🚀 Installation & Setup
 
-**1. Clone the repository**
+The application relies on three primary, interconnected containers orchestrated by Docker Compose:
+1. `db`: A PostgreSQL database container configured with a persistent Docker Volume to ensure data retention across container restarts.
+2. `api`: The backend container serving the REST API endpoints and handling business logic.
+3. `frontend`: The Streamlit-based graphical user interface for end-users.
+
+## ⚙️ Getting Started (Docker)
+
+The recommended and most straightforward way to run the project is using Docker. There is no need to install Python or PostgreSQL locally on your host machine.
+
+1. Clone the repository:
 ```bash
-git clone https://github.com/BartoliniBartlomiej/Campsite-Manager-with-RestAPI-SQL-and-Docker.git
-cd campsite-manager
+git clone [https://github.com/BartoliniBartlomiej/Campsite-Manager-with-RestAPI-SQL-and-Docker.git](https://github.com/BartoliniBartlomiej/Campsite-Manager-with-RestAPI-SQL-and-Docker.git)
+cd Campsite-Manager-with-RestAPI-SQL-and-Docker
+```
+
+2. Build and run the containers using Docker Compose:
+```bash
+docker-compose up --build
 
 ```
 
-**2. Start the PostgreSQL Database**
-The project uses Docker to quickly spin up a pre-configured database.
+
+*(To run the containers in the background/detached mode, append the `-d` flag).*
+3. Access the application:
+* **Frontend UI (Streamlit):** [http://localhost:8501](https://www.google.com/search?q=http://localhost:8501)
+* **API Documentation (Swagger UI):** [http://localhost:8000/docs](https://www.google.com/search?q=http://localhost:8000/docs)
+
+
+
+## 🧪 Testing and CI/CD
+
+The project includes unit and integration tests covering core business logic (e.g., reservation date validation, data integrity). During testing, the application dynamically switches to an isolated, in-memory SQLite database to prevent modifications to the main data.
+
+**Running tests locally:**
 
 ```bash
-docker-compose up -d
+# Requires an active virtual environment and installed dependencies from requirements.txt
+pytest -v
 
 ```
 
-*Note: The database runs on `localhost:5432` with user `admin` and password `secretpassword`.*
+**Continuous Integration (CI):**
+This repository is integrated with GitHub Actions. Upon every `push` or `pull_request` to the main branch, the CI pipeline automatically sets up the Python environment, installs dependencies, and executes the Pytest test suite to ensure code stability and prevent regressions.
 
-**3. Install Python Dependencies**
-It is recommended to use a virtual environment.
+## 🛑 Stopping the Environment
 
-```bash
-pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic streamlit requests pandas
-
-```
-
-## 💻 Running the Application
-
-To run the full stack, you need to open **two separate terminal windows**.
-
-**Terminal 1: Start the Backend API**
+To gracefully stop the application while preserving all database records (thanks to Docker Volumes), run:
 
 ```bash
-uvicorn main:app --reload
+docker-compose down
 
 ```
-
-The API will start running at `http://127.0.0.1:8000`.
-
-* You can view the interactive API documentation by visiting: `http://127.0.0.1:8000/docs`
-
-**Terminal 2: Start the Web Dashboard**
-
-```bash
-streamlit run frontend.py
-
-```
-
-Your browser should automatically open the dashboard at `http://localhost:8501`.
-
-## 🗂️ Project Structure
-
-* `main.py` - The FastAPI application containing database models, Pydantic schemas, and API endpoints.
-* `frontend.py` - The Streamlit web application serving as the UI.
-* `docker-compose.yml` - Configuration for the PostgreSQL database container.
-* `client.py` - (Legacy) A terminal-based Python client for interacting with the API.
-
