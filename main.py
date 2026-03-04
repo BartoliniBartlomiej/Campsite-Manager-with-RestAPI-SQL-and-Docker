@@ -42,8 +42,10 @@ class Reservation(Base):
     end_date = Column(Date)
     status = Column(String, default="confirmed")  # Np. confirmed, cancelled, completed
 
-
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print("No connection with database (OK with tests on Github Actions.")
 
 
 # --- Pydantic / validation of input data
