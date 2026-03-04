@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 1. Baza danych (to już miałeś)
   db:
     image: postgres:15-alpine
     container_name: camping_postgres
@@ -8,11 +9,43 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secretpassword
-      POSTGRES_DB: camping_db
+      POSTGRES_DB: camping
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    # DODAJEMY TO: Docker będzie pukał do bazy, aż ta odpowie
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d camping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: camping_api
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy # ZMIENIAMY TO: API czeka na ZDROWĄ bazę
+    environment:
+      - DATABASE_URL=postgresql://admin:secretpassword@db:5432/camping
+
+  # 3. Twój frontend (Streamlit)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: camping_frontend
+    restart: always
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    environment:
+      # Tutaj mówimy Streamlitowi, że API jest pod adresem "http://api:8000"
+      - API_URL=http://api:8000
 volumes:
   postgres_data:

@@ -4,8 +4,14 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from pydantic import BaseModel
 from typing import Optional
+import os
 
-SQLALCHEMY_DATABASE_URL = "postgresql://admin:secretpassword@localhost:5432/camping_db"
+
+SQLALCHEMY_DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://admin:secretpassword@localhost:5432/camping_db"
+)
+
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

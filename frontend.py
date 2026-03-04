@@ -2,9 +2,12 @@ import streamlit as st
 import requests
 import pandas as pd
 import datetime
+import os
 
+# API_URL = os.getenv("API_URL", "http://localhost:8000")
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 # Konfiguracja API
-API_URL = "http://127.0.0.1:8000"
+# API_URL = "http://127.0.0.1:8000"
 
 # Ustawienia strony Streamlit
 st.set_page_config(page_title="Camping Manager", page_icon="🏕️", layout="wide")
