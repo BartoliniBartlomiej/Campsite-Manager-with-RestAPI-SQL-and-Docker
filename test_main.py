@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -61,6 +60,67 @@ def test_create_spot():
     assert data["type"] == "Tent"
     assert data["price"] == 45.5
     assert "id" in data  # auto ID from database ?
+
+
+def test_update_spot_success():
+    create_res = client.post("/spots", json={
+        "name": "Stare Pole",
+        "type": "namiot",
+        "price": 40.0
+    })
+    spot_id = create_res.json()["id"]
+
+    updated_data = {
+        "name": "Nowe Pole Premium",
+        "type": "kamper",
+        "price": 85.0
+    }
+
+    update_res = client.patch(f"/spots/{spot_id}", json=updated_data)
+
+    assert update_res.status_code == 200
+
+    response_data = update_res.json()
+
+    assert response_data["message"] == f"Spot {spot_id} updated successfully"
+
+    spot_data = response_data["spot"]
+    assert spot_data["name"] == "Nowe Pole Premium"
+    assert spot_data["type"] == "kamper"
+    assert spot_data["price"] == 85.0
+
+
+def test_update_spot_not_found():
+    updated_data = {
+        "name": "Widmo"
+    }
+
+    res = client.patch("/spots/9999", json=updated_data)
+
+    assert res.status_code == 404 # Not found
+
+def test_create_double_customers():
+    first_response = client.post(
+        "/customers",
+        json={
+            "first_name": "Test",
+            "last_name": "First",
+            "email": "test@example.com",
+            "phone": "123456789"
+        }
+    )
+    second_response = client.post(
+        "/customers",
+        json={
+            "first_name": "Test",
+            "last_name": "Second",
+            "email": "test@example.com",
+            "phone": "000000000"
+        }
+    )
+
+    assert first_response.status_code == 200
+    assert second_response.status_code == 400 # ERROR - second customer with the same email
 
 
 def test_get_spots():
